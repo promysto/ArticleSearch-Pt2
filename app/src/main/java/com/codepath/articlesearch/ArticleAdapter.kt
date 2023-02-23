@@ -13,7 +13,7 @@ import com.bumptech.glide.Glide
 const val ARTICLE_EXTRA = "ARTICLE_EXTRA"
 private const val TAG = "ArticleAdapter"
 
-class ArticleAdapter(private val context: Context) :
+class ArticleAdapter(private val context: Context, private val displayArticles: List<DisplayArticle>) :
     RecyclerView.Adapter<ArticleAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -22,10 +22,11 @@ class ArticleAdapter(private val context: Context) :
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        // TODO: Get the individual article and bind to holder
+        val article = displayArticles[position]
+        holder.bind(article)
     }
 
-    override fun getItemCount() = 0
+    override fun getItemCount() = displayArticles.size
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView),
         View.OnClickListener {
@@ -39,11 +40,22 @@ class ArticleAdapter(private val context: Context) :
         }
 
         // TODO: Write a helper method to help set up the onBindViewHolder method
-
-        override fun onClick(v: View?) {
-            // TODO: Get selected article
-
-            // TODO: Navigate to Details screen and pass selected article
+        fun bind(displayArticle: DisplayArticle) {
+            titleTextView.text = displayArticle.headline
+            abstractTextView.text = displayArticle.abstract
+            Glide.with(context)
+                .load(displayArticle.mediaImageUrl)
+                .into(mediaImageView)
         }
+        override fun onClick(v: View?) {
+            // Get selected article
+            val article = displayArticles[absoluteAdapterPosition]
+
+            //  Navigate to Details screen and pass selected article
+            val intent = Intent(context, DetailActivity::class.java)
+            intent.putExtra(ARTICLE_EXTRA, article)
+            context.startActivity(intent)
+        }
+
     }
 }
